@@ -1,0 +1,20 @@
+﻿Analyzing dashboard...                                          
+
+warning - Unused import: 'package:intl/intl.dart' - lib\features\dashboard\screens\dashboard_screen.dart:3:8 - unused_import
+warning - Unused import: 'package:mvp_flutter_app/shared/widgets/session_card.dart' - lib\features\dashboard\screens\dashboard_screen.dart:12:8 - unused_import
+warning - Unused import: 'package:mvp_flutter_app/core/utils/date_utils.dart' - lib\features\dashboard\screens\dashboard_screen.dart:13:8 - unused_import
+warning - The value of the field '_lastMonthlySidebarInteraction' isn't used - lib\features\dashboard\screens\dashboard_screen.dart:36:12 - unused_field
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\dashboard\screens\dashboard_screen.dart:180:57 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\features\dashboard\widgets\collapsible_session_group.dart:14:9 - use_super_parameters
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\dashboard\widgets\dashboard_dialogs.dart:48:19 - deprecated_member_use
+warning - The operand can't be 'null', so the condition is always 'true' - lib\features\dashboard\widgets\dashboard_dialogs.dart:168:51 - unnecessary_null_comparison
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\dashboard\widgets\dashboard_dialogs.dart:197:17 - deprecated_member_use
+warning - The value of the field '_sessionPopupOpen' isn't used - lib\features\dashboard\widgets\month_view_sidebar.dart:38:8 - unused_field
+   info - Don't invoke 'print' in production code - lib\features\dashboard\widgets\month_view_sidebar.dart:65:9 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\dashboard\widgets\month_view_sidebar.dart:83:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\dashboard\widgets\month_view_sidebar.dart:113:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\dashboard\widgets\month_view_sidebar.dart:145:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\dashboard\widgets\month_view_sidebar.dart:320:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\dashboard\widgets\month_view_sidebar.dart:574:85 - deprecated_member_use
+warning - The value of the local variable 'todayStr' isn't used - lib\features\dashboard\widgets\month_view_sidebar.dart:636:11 - unused_local_variable
+

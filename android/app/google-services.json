@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "283870732103",
+    "project_id": "ni-coaching-app-2025",
+    "storage_bucket": "ni-coaching-app-2025.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283870732103:android:587778bb4ecd309f707662",
+        "android_client_info": {
+          "package_name": "com.example.nurturing_institute_mvp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDe-V37eomzuq-oIYhXHr1Bcu1Nm8wQ5vs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,4 @@
+// CocoaPods base config for Profile builds
+// Use conditional include so project opens even before pods are installed
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"
+#include "Generated.xcconfig"

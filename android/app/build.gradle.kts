@@ -19,7 +19,7 @@ val flutterVersionCode: String = localProperties.getProperty("flutter.versionCod
 val flutterVersionName: String = localProperties.getProperty("flutter.versionName") ?: "1.0"
 
 android {
-    namespace = "com.example.nurturing_institute_mvp"
+    namespace = "com.nurturinginstitute.niclient"
     // --- Updated to satisfy plugin requirements (flutter_local_notifications, flutter_timezone) ---
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
@@ -40,7 +40,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.nurturing_institute_mvp"
+        applicationId = "com.nurturinginstitute.niclient"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInt()

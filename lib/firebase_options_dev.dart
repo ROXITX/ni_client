@@ -42,7 +42,7 @@ class DevFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCYPF7eIh8jrbr6OO6qHlag8hwcdAu9LZw',
-    appId: '1:106429952321:android:d2e5a8f7f9a2c76b0df1c0',
+    appId: '1:106429952321:android:0da7c57ecd064f060df1c0',
     messagingSenderId: '106429952321',
     projectId: 'test-db-ni-admin',
     storageBucket: 'test-db-ni-admin.firebasestorage.app',

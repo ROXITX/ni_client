@@ -163,16 +163,18 @@ class PaymentRepository {
         .collection('users')
         .doc(_userId)
         .collection('clients')
-        .where('email', isEqualTo: email.toLowerCase())
-        .limit(1)
         .get();
 
-    if (query.docs.isEmpty) {
+    final matchingClients = query.docs.where((doc) => 
+       (doc.data()['email'] as String).toLowerCase() == email.toLowerCase()
+    );
+
+    if (matchingClients.isEmpty) {
       yield [];
       return;
     }
 
-    final int clientId = query.docs.first.data()['id'];
+    final int clientId = matchingClients.first.data()['id'];
 
     yield* _entriesRef
         .where('clientId', isEqualTo: clientId)

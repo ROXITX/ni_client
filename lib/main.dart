@@ -36,8 +36,10 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print("Handling a background message: ${message.messageId}");
+  final firebaseOptions = AppConfig.useTestDatabase 
+      ? DevFirebaseOptions.currentPlatform 
+      : DefaultFirebaseOptions.currentPlatform;
+  await Firebase.initializeApp(options: firebaseOptions);
 }
 
 void main() async {
@@ -48,28 +50,41 @@ void main() async {
       ? DevFirebaseOptions.currentPlatform 
       : DefaultFirebaseOptions.currentPlatform;
       
-  if (AppConfig.useTestDatabase) {
-    print('⚠️ WARNING: RUNNING IN TEST DATABASE MODE');
-  } else {
-    print('✅ RUNNING IN PRODUCTION DATABASE MODE');
+  if (Firebase.apps.isEmpty) {
+    try {
+      await Firebase.initializeApp(
+        options: firebaseOptions,
+      );
+    } catch (e) {
+      if (!e.toString().contains('duplicate-app')) {
+        rethrow;
+      }
+    }
   }
-
-  await Firebase.initializeApp(
-    options: firebaseOptions,
-  );
 
   // Initialize notifications
   final notificationService = NotificationService();
-  await notificationService.init();
   
   // Background handler
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   
-  // Initialize FCM
-  final fcmService = FCMService();
-  await fcmService.initialize();
-
   runApp(MvpApp(notificationService: notificationService));
+
+  // Initialize notifications and FCM AFTER runApp to prevent system permission 
+  // dialogs from blocking the first Flutter frame and causing a black screen.
+  Future.delayed(const Duration(milliseconds: 500), () async {
+    // Debug Print: Tell us exactly which database we connected to!
+    print('\n\n==================================================');
+    print('🔥 FIREBASE INITIALIZED SUCCESSFULLY 🔥');
+    print('   CONNECTED TO: ${Firebase.app().options.projectId}');
+    print('   ENVIRONMENT: ${AppConfig.useTestDatabase ? "TEST" : "PRODUCTION"}');
+    print('   WORKSPACE ID: ${AppConfig.sharedWorkspaceId}');
+    print('==================================================\n\n');
+
+    await notificationService.init();
+    final fcmService = FCMService();
+    await fcmService.initialize();
+  });
 }
 
 class MvpApp extends StatelessWidget {
@@ -130,16 +145,21 @@ class AuthGate extends StatelessWidget {
    
    @override
    Widget build(BuildContext context) {
-      return StreamBuilder<User?>(
-         stream: FirebaseAuth.instance.authStateChanges(),
-         builder: (context, snapshot) {
-            // If we have a user, show the main scaffold
-            if (snapshot.hasData) {
-               return const MainScaffold();
-            }
-            // Otherwise show login
-            return const LoginPage();
-         },
+      return ValueListenableBuilder<bool>(
+        valueListenable: AppConfig.isVerifyingNewUser,
+        builder: (context, isVerifying, child) {
+          return StreamBuilder<User?>(
+             stream: FirebaseAuth.instance.authStateChanges(),
+             builder: (context, snapshot) {
+                // If we have a user and we are NOT currently verifying a new auth account, show dashboard
+                if (snapshot.hasData && !isVerifying) {
+                   return const MainScaffold();
+                }
+                // Otherwise show login (or keep showing login while verifying)
+                return const LoginPage();
+             },
+          );
+        },
       );
    }
 }

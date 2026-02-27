@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "106429952321",
+    "project_id": "test-db-ni-admin",
+    "storage_bucket": "test-db-ni-admin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106429952321:android:d2e5a8f7f9a2c76b0df1c0",
+        "android_client_info": {
+          "package_name": "com.nurturinginstitute.niclient"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYPF7eIh8jrbr6OO6qHlag8hwcdAu9LZw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

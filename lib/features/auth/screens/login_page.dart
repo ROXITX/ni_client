@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/config/app_config.dart';
+import '../../../shared/widgets/main_scaffold.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -50,14 +51,25 @@ class _LoginPageState extends State<LoginPage> {
         
         if (password == 'Password@123') {
            final prefs = await SharedPreferences.getInstance();
-           await prefs.setBool('prompt_password_change', true);
+           final hasPrompted = prefs.getBool('has_prompted_password_change_${email.toLowerCase()}') ?? false;
+           if (!hasPrompted) {
+             await prefs.setBool('prompt_password_change', true);
+             await prefs.setBool('has_prompted_password_change_${email.toLowerCase()}', true);
+           }
         }
+        
+        // Ensure we land on the dashboard whenever we successfully log in.
+        MainScaffold.viewNotifier.value = 'dashboard';
+
         // After a successful login, AuthGate handles navigation.
       } on FirebaseAuthException catch (e) {
         // Handle first time login with default password
         if (e.code == 'user-not-found' || e.code == 'invalid-credential' || e.code == 'wrong-password') {
           if (password == 'Password@123') {
              try {
+               // Prevent AuthGate from changing screens while we verify the user
+               AppConfig.isVerifyingNewUser.value = true;
+               
                // Try dynamically creating the auth user
                final creds = await FirebaseAuth.instance.createUserWithEmailAndPassword(
                  email: email, 
@@ -75,16 +87,30 @@ class _LoginPageState extends State<LoginPage> {
                if (query.docs.isEmpty) {
                   // Not registered in admin app. Delete auth account.
                   await creds.user?.delete();
+                  AppConfig.isVerifyingNewUser.value = false;
                   if (mounted) {
                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Email not registered by the admin. Access denied.')));
                   }
                } else {
                   final prefs = await SharedPreferences.getInstance();
-                  await prefs.setBool('prompt_password_change', true);
+                  final hasPrompted = prefs.getBool('has_prompted_password_change_${email.toLowerCase()}') ?? false;
+                  if (!hasPrompted) {
+                    await prefs.setBool('prompt_password_change', true);
+                    await prefs.setBool('has_prompted_password_change_${email.toLowerCase()}', true);
+                  }
+                  AppConfig.isVerifyingNewUser.value = false;
+                  MainScaffold.viewNotifier.value = 'dashboard';
+
                }
              } on FirebaseAuthException catch (createError) {
+               AppConfig.isVerifyingNewUser.value = false;
                if (mounted) {
                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Failed: ${createError.message}')));
+               }
+             } catch (e) {
+               AppConfig.isVerifyingNewUser.value = false;
+               if (mounted) {
+                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Verification Failed: ${e.toString()}')));
                }
              }
           } else {
@@ -98,6 +124,10 @@ class _LoginPageState extends State<LoginPage> {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Failed: ${e.message}')));
           }
         }
+      } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Error: ${e.toString()}')));
+          }
       }
     }
   }

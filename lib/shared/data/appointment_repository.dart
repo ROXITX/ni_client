@@ -50,9 +50,11 @@ class AppointmentRepository {
       return;
     }
     yield* _clientsRef
-        .where('email', isEqualTo: email.toLowerCase())
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+        .map((snapshot) {
+           final clients = snapshot.docs.map((doc) => doc.data()).toList();
+           return clients.where((client) => client.email.toLowerCase() == email.toLowerCase()).toList();
+        });
   }
 
   Stream<List<Session>> getSessions() async* {
@@ -66,16 +68,18 @@ class AppointmentRepository {
         .collection('users')
         .doc(_userId)
         .collection('clients')
-        .where('email', isEqualTo: email.toLowerCase())
-        .limit(1)
         .get();
 
-    if (query.docs.isEmpty) {
+    final matchingClients = query.docs.where((doc) => 
+       (doc.data()['email'] as String).toLowerCase() == email.toLowerCase()
+    );
+
+    if (matchingClients.isEmpty) {
       yield [];
       return;
     }
 
-    final int clientId = query.docs.first.data()['id'];
+    final int clientId = matchingClients.first.data()['id'];
 
     yield* _sessionsRef.where('clientId', isEqualTo: clientId).snapshots().map((snapshot) {
       final uniqueSessions = <String, Session>{};

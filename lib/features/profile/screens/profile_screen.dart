@@ -10,18 +10,27 @@ class ProfileScreen extends StatelessWidget {
 
   Future<Client?> _fetchClientProfile() async {
     final email = FirebaseAuth.instance.currentUser?.email;
+    print('DEBUG PROFILE FETCH: Current User Email = $email');
     if (email == null) return null;
 
     final query = await FirebaseFirestore.instance
         .collection('users')
         .doc(AppConfig.sharedWorkspaceId)
         .collection('clients')
-        .where('email', isEqualTo: email.toLowerCase())
-        .limit(1)
         .get();
 
-    if (query.docs.isNotEmpty) {
-      return Client.fromJson(query.docs.first.data());
+    final matchingClients = query.docs.where((doc) => 
+       (doc.data()['email'] as String).toLowerCase() == email.toLowerCase()
+    );
+    
+    print('DEBUG PROFILE FETCH: Query Workspace = ${AppConfig.sharedWorkspaceId}');
+    print('DEBUG PROFILE FETCH: Query Email = ${email.toLowerCase()}');
+    print('DEBUG PROFILE FETCH: Query Found ${matchingClients.length} docs.');
+
+    if (matchingClients.isNotEmpty) {
+      final data = matchingClients.first.data();
+      print('DEBUG PROFILE FETCH: First doc data = $data');
+      return Client.fromJson(data);
     }
     return null;
   }

@@ -47,6 +47,19 @@ android {
         versionName = flutterVersionName
     }
 
+    flavorDimensions += "env"
+
+    productFlavors {
+        create("dev") {
+            dimension = "env"
+            resValue("string", "app_name", "NI Client (Test)")
+        }
+        create("prod") {
+            dimension = "env"
+            resValue("string", "app_name", "NI Client")
+        }
+    }
+
     buildTypes {
         getByName("release") {
             signingConfig = signingConfigs.getByName("debug")

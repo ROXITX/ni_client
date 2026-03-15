@@ -16,12 +16,14 @@ class CourseListScreen extends StatelessWidget {
         .collection('users')
         .doc(AppConfig.sharedWorkspaceId)
         .collection('clients')
-        .where('email', isEqualTo: email.toLowerCase())
-        .limit(1)
         .get();
 
-    if (query.docs.isNotEmpty) {
-      return Client.fromJson(query.docs.first.data());
+    final matchingClients = query.docs.where((doc) => 
+       (doc.data()['email'] as String).toLowerCase() == email.toLowerCase()
+    );
+
+    if (matchingClients.isNotEmpty) {
+      return Client.fromJson(matchingClients.first.data());
     }
     return null;
   }

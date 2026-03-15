@@ -81,10 +81,13 @@ class _LoginPageState extends State<LoginPage> {
                  .collection('users')
                  .doc(AppConfig.sharedWorkspaceId)
                  .collection('clients')
-                 .where('email', isEqualTo: email.toLowerCase())
                  .get();
                  
-               if (query.docs.isEmpty) {
+               final matchingClients = query.docs.where((doc) => 
+                 (doc.data()['email'] as String).toLowerCase() == email.toLowerCase()
+               );
+                 
+               if (matchingClients.isEmpty) {
                   // Not registered in admin app. Delete auth account.
                   await creds.user?.delete();
                   AppConfig.isVerifyingNewUser.value = false;

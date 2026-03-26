@@ -41,6 +41,9 @@ class DashboardLoaded extends DashboardState {
   final int completions;
   final int totalToday;
   final List<Map<String, dynamic>> notifications; // Changed from List<String> to Map
+  final List<PaymentEntry> todaysPayments; // NEW
+  final Map<String, List<PaymentEntry>> paymentsByStatus; // NEW
+  final List<PaymentEntry> allPendingPayments;
 
   DashboardLoaded({
     required this.clients,
@@ -50,6 +53,9 @@ class DashboardLoaded extends DashboardState {
     required this.completions,
     required this.totalToday,
     required this.notifications,
+    required this.todaysPayments, // NEW
+    required this.paymentsByStatus, // NEW
+    required this.allPendingPayments,
   });
 }
 
@@ -153,6 +159,31 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
          _scheduleNotifications(_clients, _sessions, _pendingPayments);
       }
 
+      // Process Payments
+      final todaysPayments = <PaymentEntry>[];
+      final Map<String, List<PaymentEntry>> paymentsByStatus = {
+         'Overdue': [],
+         'Due Today': [],
+         'Paid': [],
+      };
+      
+      for (final p in _pendingPayments) {
+         final dueDate = DateTime.tryParse(p.dueDate) ?? now;
+         final isToday = dueDate.year == todayDate.year && dueDate.month == todayDate.month && dueDate.day == todayDate.day;
+         final isOverdue = dueDate.isBefore(todayDate);
+         
+         if (p.status == PaymentStatus.paid) {
+            paymentsByStatus['Paid']!.add(p);
+            if (isToday) todaysPayments.add(p);
+         } else if (isOverdue) {
+            paymentsByStatus['Overdue']!.add(p);
+            todaysPayments.add(p);
+         } else if (isToday) {
+            paymentsByStatus['Due Today']!.add(p);
+            todaysPayments.add(p);
+         }
+      }
+
       emit(DashboardLoaded(
         clients: _clients,
         sessions: _sessions,
@@ -161,6 +192,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         completions: completions,
         totalToday: totalToday,
         notifications: notifications,
+        todaysPayments: todaysPayments,
+        paymentsByStatus: paymentsByStatus,
+        allPendingPayments: _pendingPayments,
       ));
     } catch (e) {
       emit(DashboardError(e.toString()));

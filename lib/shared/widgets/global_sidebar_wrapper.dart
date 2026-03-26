@@ -122,32 +122,28 @@ class _GlobalSidebarWrapperState extends State<GlobalSidebarWrapper> with Ticker
 
             return Stack(
               children: [
-                // 1. The App Content (Navigator)
-                widget.child,
-
-                // 2. Gesture Detectors (Edge Swipes)
-                // Left Edge Detector (Sidebar Menu)
-                Positioned(
-                  left: 0, top: detectorTop, bottom: 0, width: 45,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onHorizontalDragStart: (d) => _startDrag(d, isLeft: true),
-                    onHorizontalDragUpdate: (d) => _updateDrag(d, isLeft: true),
-                    onHorizontalDragEnd: (d) => _endDrag(d, isLeft: true),
-                    child: Container(color: Colors.transparent),
-                  ),
-                ),
-                
-                // Right Edge Detector (Monthly Calendar)
-                Positioned(
-                  right: 0, top: detectorTop, bottom: 0, width: 45,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onHorizontalDragStart: (d) => _startDrag(d, isLeft: false),
-                    onHorizontalDragUpdate: (d) => _updateDrag(d, isLeft: false),
-                    onHorizontalDragEnd: (d) => _endDrag(d, isLeft: false),
-                    child: Container(color: Colors.transparent),
-                  ),
+                // 1 & 2. The App Content wrapped in an intelligent Gesture Detector
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onHorizontalDragStart: (d) {
+                    final screenWidth = MediaQuery.of(context).size.width;
+                    if (d.globalPosition.dy > detectorTop) {
+                      if (d.globalPosition.dx < 50) {
+                        _startDrag(d, isLeft: true);
+                      } else if (d.globalPosition.dx > screenWidth - 50) {
+                        _startDrag(d, isLeft: false);
+                      }
+                    }
+                  },
+                  onHorizontalDragUpdate: (d) {
+                    if (_isDraggingLeft) _updateDrag(d, isLeft: true);
+                    if (_isDraggingRight) _updateDrag(d, isLeft: false);
+                  },
+                  onHorizontalDragEnd: (d) {
+                    if (_isDraggingLeft) _endDrag(d, isLeft: true);
+                    if (_isDraggingRight) _endDrag(d, isLeft: false);
+                  },
+                  child: widget.child,
                 ),
 
                  // 3. RIGHT SIDEBAR (Monthly View)
